@@ -4,11 +4,11 @@ project(USDataViewer)
 
 #-----------------------------------------------------------------------------
 # Extension meta-information
-set(EXTENSION_HOMEPAGE "http://www.example.com/Slicer/Extensions/USDataViewer")
+set(EXTENSION_HOMEPAGE "https://github.com/lchauvin/USDataViewer")
 set(EXTENSION_CATEGORY "Examples")
 set(EXTENSION_CONTRIBUTORS "John Doe (AnyWare Corp.)")
 set(EXTENSION_DESCRIPTION "This is an example of a simple extension")
-set(EXTENSION_ICONURL "http://www.example.com/Slicer/Extensions/USDataViewer.png")
+set(EXTENSION_ICONURL "https://raw.github.com/lchauvin/USDataViewer/master/USDataViewer.png")
 set(EXTENSION_SCREENSHOTURLS "http://www.example.com/Slicer/Extensions/USDataViewer/Screenshots/1.png")
 
 #-----------------------------------------------------------------------------
