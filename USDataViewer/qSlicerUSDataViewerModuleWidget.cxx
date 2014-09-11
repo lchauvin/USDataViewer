@@ -85,9 +85,10 @@ void qSlicerUSDataViewerModuleWidget::onShowGraphClicked()
   if (!d->GraphDialogWidget)
     {
     d->GraphDialogWidget = new qSlicerUSDataViewerGraphWidget(this);
+    d->GraphDialogWidget->setDataNode(d->USDataNodeSelector->currentNode());
     }
 
-  connect(d->USDataNodeSelector, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+  connect(d->USDataNodeSelector, SIGNAL(nodeActivated(vtkMRMLNode*)),
 	  d->GraphDialogWidget, SLOT(setDataNode(vtkMRMLNode*)));
 
   d->GraphDialogWidget->show();

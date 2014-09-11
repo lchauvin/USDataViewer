@@ -56,8 +56,10 @@ public:
 
   void currentDataNodeModified(vtkMRMLNode* dataNode);
 
-protected slots:
+public slots:
   void setDataNode(vtkMRMLNode* dataNode);
+
+protected slots:
   void updateGraphFromImage();
 
 protected:

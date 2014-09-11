@@ -143,8 +143,6 @@ void qSlicerUSDataViewerGraphWidget
     d->GraphWidget->chart()->RemovePlot(i);
     }
 
-
-
   // Get number of samples
   double numberOfSamples = imageData->GetScalarComponentAsDouble(0,0,0,0);
 
