@@ -18,35 +18,54 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerUSDataViewerFooBarWidget_h
-#define __qSlicerUSDataViewerFooBarWidget_h
+#ifndef __qSlicerUSDataViewerGraphWidget_h
+#define __qSlicerUSDataViewerGraphWidget_h
 
 // Qt includes
-#include <QWidget>
+#include <QDialog>
 
-// FooBar Widgets includes
+#include "vtkAxis.h"
+#include "vtkChartXY.h"
+#include "vtkDoubleArray.h"
+#include "vtkPlot.h"
+#include "vtkTable.h"
+
+#include "vtkImageData.h"
+
+#include "vtkMRMLNode.h"
+#include "vtkMRMLScalarVolumeNode.h"
+
+// Graph Widgets includes
 #include "qSlicerUSDataViewerModuleWidgetsExport.h"
 
-class qSlicerUSDataViewerFooBarWidgetPrivate;
+#include "ctkVTKObject.h"
+
+class qSlicerUSDataViewerGraphWidgetPrivate;
 
 /// \ingroup Slicer_QtModules_USDataViewer
-class Q_SLICER_MODULE_USDATAVIEWER_WIDGETS_EXPORT qSlicerUSDataViewerFooBarWidget
-  : public QWidget
+class Q_SLICER_MODULE_USDATAVIEWER_WIDGETS_EXPORT qSlicerUSDataViewerGraphWidget
+: public QDialog
 {
   Q_OBJECT
+  QVTK_OBJECT
+
 public:
-  typedef QWidget Superclass;
-  qSlicerUSDataViewerFooBarWidget(QWidget *parent=0);
-  virtual ~qSlicerUSDataViewerFooBarWidget();
+  typedef QDialog Superclass;
+  qSlicerUSDataViewerGraphWidget(QWidget *parent=0);
+  virtual ~qSlicerUSDataViewerGraphWidget();
+
+  void currentDataNodeModified(vtkMRMLNode* dataNode);
 
 protected slots:
+  void setDataNode(vtkMRMLNode* dataNode);
+  void updateGraphFromImage();
 
 protected:
-  QScopedPointer<qSlicerUSDataViewerFooBarWidgetPrivate> d_ptr;
+  QScopedPointer<qSlicerUSDataViewerGraphWidgetPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerUSDataViewerFooBarWidget);
-  Q_DISABLE_COPY(qSlicerUSDataViewerFooBarWidget);
+  Q_DECLARE_PRIVATE(qSlicerUSDataViewerGraphWidget);
+  Q_DISABLE_COPY(qSlicerUSDataViewerGraphWidget);
 };
 
 #endif

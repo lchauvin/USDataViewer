@@ -20,6 +20,7 @@
 
 // SlicerQt includes
 #include "qSlicerAbstractModuleWidget.h"
+#include "qSlicerUSDataViewerGraphWidget.h"
 
 #include "qSlicerUSDataViewerModuleExport.h"
 
@@ -39,7 +40,7 @@ public:
   virtual ~qSlicerUSDataViewerModuleWidget();
 
 public slots:
-
+  void onShowGraphClicked();
 
 protected:
   QScopedPointer<qSlicerUSDataViewerModuleWidgetPrivate> d_ptr;

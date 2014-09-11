@@ -28,6 +28,9 @@ class qSlicerUSDataViewerModuleWidgetPrivate: public Ui_qSlicerUSDataViewerModul
 {
 public:
   qSlicerUSDataViewerModuleWidgetPrivate();
+  ~qSlicerUSDataViewerModuleWidgetPrivate();
+
+  qSlicerUSDataViewerGraphWidget* GraphDialogWidget;
 };
 
 //-----------------------------------------------------------------------------
@@ -36,6 +39,16 @@ public:
 //-----------------------------------------------------------------------------
 qSlicerUSDataViewerModuleWidgetPrivate::qSlicerUSDataViewerModuleWidgetPrivate()
 {
+  this->GraphDialogWidget = NULL;
+}
+
+//-----------------------------------------------------------------------------
+qSlicerUSDataViewerModuleWidgetPrivate::~qSlicerUSDataViewerModuleWidgetPrivate()
+{
+  if (this->GraphDialogWidget)
+    {
+    this->GraphDialogWidget->deleteLater();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -59,4 +72,23 @@ void qSlicerUSDataViewerModuleWidget::setup()
   Q_D(qSlicerUSDataViewerModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
+
+  connect(d->ShowGraphButton, SIGNAL(clicked()),
+	  this, SLOT(onShowGraphClicked()));
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerModuleWidget::onShowGraphClicked()
+{
+  Q_D(qSlicerUSDataViewerModuleWidget);
+
+  if (!d->GraphDialogWidget)
+    {
+    d->GraphDialogWidget = new qSlicerUSDataViewerGraphWidget(this);
+    }
+
+  connect(d->USDataNodeSelector, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+	  d->GraphDialogWidget, SLOT(setDataNode(vtkMRMLNode*)));
+
+  d->GraphDialogWidget->show();
 }
