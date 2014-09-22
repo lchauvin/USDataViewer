@@ -32,7 +32,7 @@
       <item>
        <widget class="QPushButton" name="ShowGraphButton">
         <property name="text">
-         <string>Show U.S. Graph</string>
+         <string>Show Ultrasound Graph</string>
         </property>
        </widget>
       </item>
