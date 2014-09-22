@@ -41,6 +41,9 @@ public:
 
 public slots:
   void onShowGraphClicked();
+  void onAllSamplesChanged(int state);
+  void onSampleNumberChanged(double nOfSamples);
+  void onSampleOffsetChanged(double sampleOffset);
 
 protected:
   QScopedPointer<qSlicerUSDataViewerModuleWidgetPrivate> d_ptr;

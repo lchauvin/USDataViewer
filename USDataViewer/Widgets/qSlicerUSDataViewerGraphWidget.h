@@ -55,6 +55,11 @@ public:
   virtual ~qSlicerUSDataViewerGraphWidget();
 
   void currentDataNodeModified(vtkMRMLNode* dataNode);
+  void useAllSamples(bool useAll);
+  void setNumberOfDataSamplesToUse(int nOfSamples);
+  int getNumberOfDataSamplesUsed();
+  void setOffsetOfDataSamples(int sampleOffset);
+  int getOffsetOfDataSamples();
 
 public slots:
   void setDataNode(vtkMRMLNode* dataNode);

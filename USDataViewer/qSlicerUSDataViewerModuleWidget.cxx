@@ -75,6 +75,15 @@ void qSlicerUSDataViewerModuleWidget::setup()
 
   connect(d->ShowGraphButton, SIGNAL(clicked()),
 	  this, SLOT(onShowGraphClicked()));
+
+  connect(d->AllSamplesCheckbox, SIGNAL(stateChanged(int)),
+	  this, SLOT(onAllSamplesChanged(int)));
+
+  connect(d->SampleSpinBox, SIGNAL(valueChanged(double)),
+	  this, SLOT(onSampleNumberChanged(double)));
+
+  connect(d->SampleOffsetSpinBox, SIGNAL(valueChanged(double)),
+	  this, SLOT(onSampleOffsetChanged(double)));
 }
 
 //-----------------------------------------------------------------------------
@@ -86,10 +95,63 @@ void qSlicerUSDataViewerModuleWidget::onShowGraphClicked()
     {
     d->GraphDialogWidget = new qSlicerUSDataViewerGraphWidget(this);
     d->GraphDialogWidget->setDataNode(d->USDataNodeSelector->currentNode());
+
+    d->SampleSpinBox->setValue(d->GraphDialogWidget->getNumberOfDataSamplesUsed());
     }
 
   connect(d->USDataNodeSelector, SIGNAL(nodeActivated(vtkMRMLNode*)),
 	  d->GraphDialogWidget, SLOT(setDataNode(vtkMRMLNode*)));
 
   d->GraphDialogWidget->show();
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerModuleWidget::onAllSamplesChanged(int state)
+{
+  Q_D(qSlicerUSDataViewerModuleWidget);
+
+    d->SampleSpinBox->setEnabled(state == Qt::Unchecked);
+    d->SampleOffsetSpinBox->setEnabled(state == Qt::Unchecked);
+
+    if (d->GraphDialogWidget)
+      {
+      if (state == Qt::Checked)
+	{
+	d->GraphDialogWidget->useAllSamples(true);
+	d->SampleSpinBox->setValue(d->GraphDialogWidget->getNumberOfDataSamplesUsed());
+	}
+      else
+	{
+	d->GraphDialogWidget->useAllSamples(false);
+	d->GraphDialogWidget->setNumberOfDataSamplesToUse(d->SampleSpinBox->value());
+	}
+      }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerModuleWidget::onSampleNumberChanged(double nOfSamples)
+{
+  Q_D(qSlicerUSDataViewerModuleWidget);
+
+  if (d->AllSamplesCheckbox->checkState() == Qt::Unchecked)
+    {
+    if (d->GraphDialogWidget)
+      {
+      d->GraphDialogWidget->setNumberOfDataSamplesToUse(nOfSamples);
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerModuleWidget::onSampleOffsetChanged(double sampleOffset)
+{
+  Q_D(qSlicerUSDataViewerModuleWidget);
+
+  if (d->AllSamplesCheckbox->checkState() == Qt::Unchecked)
+    {
+    if (d->GraphDialogWidget)
+      {
+      d->GraphDialogWidget->setOffsetOfDataSamples(sampleOffset);
+      }
+    }
 }

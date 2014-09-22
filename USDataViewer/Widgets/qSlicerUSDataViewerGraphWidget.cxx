@@ -37,6 +37,9 @@ public:
   virtual void setupUi(qSlicerUSDataViewerGraphWidget*);
 
   vtkMRMLNode* currentDataNode;
+  bool useAllDataSamples;
+  int numberOfSamplesToUse;
+  int dataSamplesOffset;
 };
 
 // --------------------------------------------------------------------------
@@ -46,6 +49,10 @@ qSlicerUSDataViewerGraphWidgetPrivate
   : q_ptr(&object)
 {
   this->currentDataNode = NULL;
+
+  this->useAllDataSamples = true;
+  this->numberOfSamplesToUse = 0;
+  this->dataSamplesOffset = 0;
 }
 
 // --------------------------------------------------------------------------
@@ -86,6 +93,51 @@ void qSlicerUSDataViewerGraphWidget
     }
 
   currentDataNodeModified(dataNode);
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerGraphWidget
+::useAllSamples(bool useAll)
+{
+  Q_D(qSlicerUSDataViewerGraphWidget);
+
+  d->useAllDataSamples = useAll;
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerGraphWidget
+::setNumberOfDataSamplesToUse(int nOfSamples)
+{
+  Q_D(qSlicerUSDataViewerGraphWidget);
+
+  d->numberOfSamplesToUse = nOfSamples;
+}
+
+//-----------------------------------------------------------------------------
+int qSlicerUSDataViewerGraphWidget
+::getNumberOfDataSamplesUsed()
+{
+  Q_D(qSlicerUSDataViewerGraphWidget);
+
+  return d->numberOfSamplesToUse;
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerUSDataViewerGraphWidget
+::setOffsetOfDataSamples(int sampleOffset)
+{
+  Q_D(qSlicerUSDataViewerGraphWidget);
+
+  d->dataSamplesOffset = sampleOffset;
+}
+
+//-----------------------------------------------------------------------------
+int qSlicerUSDataViewerGraphWidget
+::getOffsetOfDataSamples()
+{
+  Q_D(qSlicerUSDataViewerGraphWidget);
+
+  return d->dataSamplesOffset;
 }
 
 //-----------------------------------------------------------------------------
@@ -144,11 +196,30 @@ void qSlicerUSDataViewerGraphWidget
     }
 
   // Get number of samples
-  double numberOfSamples = imageData->GetScalarComponentAsDouble(0,0,0,0);
+  double totalNumberOfSamples = imageData->GetScalarComponentAsDouble(0,0,0,0);
+  if (d->useAllDataSamples)
+    {
+    d->numberOfSamplesToUse = totalNumberOfSamples;
+    }
+
+  int sampleOffset = 0;
+  if (!d->useAllDataSamples)
+    {
+    if (d->dataSamplesOffset + d->numberOfSamplesToUse > totalNumberOfSamples)
+      {
+      d->dataSamplesOffset = totalNumberOfSamples - d->numberOfSamplesToUse;
+      }
+    sampleOffset = d->dataSamplesOffset;
+    }
 
   // Get Scalar Pointer
   short* scalarPointer = (short*)(imageData->GetScalarPointer());
   scalarPointer++;
+
+  for (int i = 0; i < sampleOffset; ++i)
+    {
+    scalarPointer++;
+    }
 
   // Create new table
   vtkSmartPointer<vtkTable> currentSensorTable =
@@ -165,16 +236,16 @@ void qSlicerUSDataViewerGraphWidget
     currentSensorTable->Initialize();
 
     xAxis->SetName("Sample");
-    xAxis->SetNumberOfValues(numberOfSamples);
-    for (int i = 0; i < numberOfSamples; ++i)
+    xAxis->SetNumberOfValues(d->numberOfSamplesToUse);
+    for (int i = 0; i < d->numberOfSamplesToUse; ++i)
       {
-      xAxis->SetValue(i,i);
+      xAxis->SetValue(i,i+sampleOffset);
       }
     currentSensorTable->AddColumn(xAxis);
 
     yAxis->SetName("Value");
-    yAxis->SetNumberOfValues(numberOfSamples);
-    for (int i = 0; i < numberOfSamples; ++i)
+    yAxis->SetNumberOfValues(d->numberOfSamplesToUse);
+    for (int i = 0; i < d->numberOfSamplesToUse; ++i)
       {
       yAxis->SetValue(i, *scalarPointer);
       scalarPointer++;
