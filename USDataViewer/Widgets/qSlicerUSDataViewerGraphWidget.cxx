@@ -96,6 +96,15 @@ void qSlicerUSDataViewerGraphWidget
 }
 
 //-----------------------------------------------------------------------------
+vtkMRMLNode* qSlicerUSDataViewerGraphWidget
+::getDataNode()
+{
+  Q_D(qSlicerUSDataViewerGraphWidget);
+
+  return d->currentDataNode;
+}
+
+//-----------------------------------------------------------------------------
 void qSlicerUSDataViewerGraphWidget
 ::useAllSamples(bool useAll)
 {
@@ -159,6 +168,7 @@ void qSlicerUSDataViewerGraphWidget
       return;
       }
     
+    // Update graph when new image is received
     this->qvtkReconnect(d->currentDataNode, 
 			dataNode, vtkMRMLScalarVolumeNode::ImageDataModifiedEvent,
 			this, SLOT(updateGraphFromImage()));
@@ -190,6 +200,7 @@ void qSlicerUSDataViewerGraphWidget
     return;
     }
 
+  // Clean graph from previous plots
   for (int i = 0; i < d->GraphWidget->chart()->GetNumberOfPlots(); ++i)
     {
     d->GraphWidget->chart()->RemovePlot(i);
@@ -202,6 +213,13 @@ void qSlicerUSDataViewerGraphWidget
     d->numberOfSamplesToUse = totalNumberOfSamples;
     }
 
+  // Cannot plot a line without at least 2 points
+  if (d->numberOfSamplesToUse < 2)
+    {
+    return;
+    }
+
+  // Validate offset
   int sampleOffset = 0;
   if (!d->useAllDataSamples)
     {
@@ -231,10 +249,12 @@ void qSlicerUSDataViewerGraphWidget
   vtkSmartPointer<vtkDoubleArray> yAxis = 
     vtkSmartPointer<vtkDoubleArray>::New();
 
+  // Populate table
   if (currentSensorTable && xAxis && yAxis)
     {
     currentSensorTable->Initialize();
 
+    // X-Axis for sample number
     xAxis->SetName("Sample");
     xAxis->SetNumberOfValues(d->numberOfSamplesToUse);
     for (int i = 0; i < d->numberOfSamplesToUse; ++i)
@@ -243,6 +263,7 @@ void qSlicerUSDataViewerGraphWidget
       }
     currentSensorTable->AddColumn(xAxis);
 
+    // Y-Axis for sample value
     yAxis->SetName("Value");
     yAxis->SetNumberOfValues(d->numberOfSamplesToUse);
     for (int i = 0; i < d->numberOfSamplesToUse; ++i)
@@ -253,11 +274,13 @@ void qSlicerUSDataViewerGraphWidget
     currentSensorTable->AddColumn(yAxis);
     currentSensorTable->Modified();
 
+    // Set Legend
     vtkChartXY* chartXY = d->GraphWidget->chart();
     chartXY->GetAxis(1)->SetTitle("Sample");
     chartXY->GetAxis(0)->SetTitle("Value");
     chartXY->SetShowLegend(false);
 
+    // Create new plot with latest data
     vtkPlot* newLine = d->GraphWidget->chart()->AddPlot(vtkChart::LINE);
     if (newLine)
       {

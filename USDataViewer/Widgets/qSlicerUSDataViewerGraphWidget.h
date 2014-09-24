@@ -22,7 +22,7 @@
 #define __qSlicerUSDataViewerGraphWidget_h
 
 // Qt includes
-#include <QDialog>
+#include <QWidget>
 
 #include "vtkAxis.h"
 #include "vtkChartXY.h"
@@ -44,16 +44,17 @@ class qSlicerUSDataViewerGraphWidgetPrivate;
 
 /// \ingroup Slicer_QtModules_USDataViewer
 class Q_SLICER_MODULE_USDATAVIEWER_WIDGETS_EXPORT qSlicerUSDataViewerGraphWidget
-: public QDialog
+: public QWidget
 {
   Q_OBJECT
   QVTK_OBJECT
 
 public:
-  typedef QDialog Superclass;
+  typedef QWidget Superclass;
   qSlicerUSDataViewerGraphWidget(QWidget *parent=0);
   virtual ~qSlicerUSDataViewerGraphWidget();
 
+  vtkMRMLNode* getDataNode();
   void currentDataNodeModified(vtkMRMLNode* dataNode);
   void useAllSamples(bool useAll);
   void setNumberOfDataSamplesToUse(int nOfSamples);

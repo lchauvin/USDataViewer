@@ -40,7 +40,7 @@ public:
   virtual ~qSlicerUSDataViewerModuleWidget();
 
 public slots:
-  void onShowGraphClicked();
+  void onDataNodeSelected(vtkMRMLNode* selectedNode);
   void onAllSamplesChanged(int state);
   void onSampleNumberChanged(double nOfSamples);
   void onSampleOffsetChanged(double sampleOffset);

@@ -17,7 +17,7 @@
    <item>
     <widget class="ctkCollapsibleButton" name="CTKCollapsibleButton">
      <property name="text">
-      <string>Display</string>
+      <string>Ultrasound Data</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
@@ -30,11 +30,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="ShowGraphButton">
-        <property name="text">
-         <string>Show Ultrasound Graph</string>
-        </property>
-       </widget>
+       <widget class="qSlicerUSDataViewerGraphWidget" name="UltrasoundGraphWidget" native="true"/>
       </item>
      </layout>
     </widget>
@@ -60,6 +56,9 @@
           </property>
           <property name="maximum">
            <double>20000.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>19999.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -155,6 +154,12 @@
    <class>ctkDoubleSpinBox</class>
    <extends>QWidget</extends>
    <header>ctkDoubleSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>qSlicerUSDataViewerGraphWidget</class>
+   <extends>QWidget</extends>
+   <header>qSlicerUSDataViewerGraphWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

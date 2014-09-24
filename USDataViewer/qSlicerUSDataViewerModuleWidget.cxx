@@ -29,8 +29,6 @@ class qSlicerUSDataViewerModuleWidgetPrivate: public Ui_qSlicerUSDataViewerModul
 public:
   qSlicerUSDataViewerModuleWidgetPrivate();
   ~qSlicerUSDataViewerModuleWidgetPrivate();
-
-  qSlicerUSDataViewerGraphWidget* GraphDialogWidget;
 };
 
 //-----------------------------------------------------------------------------
@@ -39,16 +37,11 @@ public:
 //-----------------------------------------------------------------------------
 qSlicerUSDataViewerModuleWidgetPrivate::qSlicerUSDataViewerModuleWidgetPrivate()
 {
-  this->GraphDialogWidget = NULL;
 }
 
 //-----------------------------------------------------------------------------
 qSlicerUSDataViewerModuleWidgetPrivate::~qSlicerUSDataViewerModuleWidgetPrivate()
 {
-  if (this->GraphDialogWidget)
-    {
-    this->GraphDialogWidget->deleteLater();
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -73,8 +66,8 @@ void qSlicerUSDataViewerModuleWidget::setup()
   d->setupUi(this);
   this->Superclass::setup();
 
-  connect(d->ShowGraphButton, SIGNAL(clicked()),
-	  this, SLOT(onShowGraphClicked()));
+  connect(d->USDataNodeSelector, SIGNAL(nodeActivated(vtkMRMLNode*)),
+	  this, SLOT(onDataNodeSelected(vtkMRMLNode*)));
 
   connect(d->AllSamplesCheckbox, SIGNAL(stateChanged(int)),
 	  this, SLOT(onAllSamplesChanged(int)));
@@ -87,22 +80,19 @@ void qSlicerUSDataViewerModuleWidget::setup()
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerUSDataViewerModuleWidget::onShowGraphClicked()
+void qSlicerUSDataViewerModuleWidget::onDataNodeSelected(vtkMRMLNode* selectedNode)
 {
   Q_D(qSlicerUSDataViewerModuleWidget);
 
-  if (!d->GraphDialogWidget)
+  if (!selectedNode || (selectedNode == d->UltrasoundGraphWidget->getDataNode()))
     {
-    d->GraphDialogWidget = new qSlicerUSDataViewerGraphWidget(this);
-    d->GraphDialogWidget->setDataNode(d->USDataNodeSelector->currentNode());
-
-    d->SampleSpinBox->setValue(d->GraphDialogWidget->getNumberOfDataSamplesUsed());
+    return;
     }
+  
+  vtkMRMLScalarVolumeNode* dataNode = vtkMRMLScalarVolumeNode::SafeDownCast(selectedNode);
+  d->UltrasoundGraphWidget->setDataNode(dataNode);
 
-  connect(d->USDataNodeSelector, SIGNAL(nodeActivated(vtkMRMLNode*)),
-	  d->GraphDialogWidget, SLOT(setDataNode(vtkMRMLNode*)));
-
-  d->GraphDialogWidget->show();
+  d->SampleSpinBox->setValue(d->UltrasoundGraphWidget->getNumberOfDataSamplesUsed());
 }
 
 //-----------------------------------------------------------------------------
@@ -113,17 +103,17 @@ void qSlicerUSDataViewerModuleWidget::onAllSamplesChanged(int state)
     d->SampleSpinBox->setEnabled(state == Qt::Unchecked);
     d->SampleOffsetSpinBox->setEnabled(state == Qt::Unchecked);
 
-    if (d->GraphDialogWidget)
+    if (d->UltrasoundGraphWidget)
       {
       if (state == Qt::Checked)
 	{
-	d->GraphDialogWidget->useAllSamples(true);
-	d->SampleSpinBox->setValue(d->GraphDialogWidget->getNumberOfDataSamplesUsed());
+	d->UltrasoundGraphWidget->useAllSamples(true);
+	d->SampleSpinBox->setValue(d->UltrasoundGraphWidget->getNumberOfDataSamplesUsed());
 	}
       else
 	{
-	d->GraphDialogWidget->useAllSamples(false);
-	d->GraphDialogWidget->setNumberOfDataSamplesToUse(d->SampleSpinBox->value());
+	d->UltrasoundGraphWidget->useAllSamples(false);
+	d->UltrasoundGraphWidget->setNumberOfDataSamplesToUse(d->SampleSpinBox->value());
 	}
       }
 }
@@ -135,9 +125,9 @@ void qSlicerUSDataViewerModuleWidget::onSampleNumberChanged(double nOfSamples)
 
   if (d->AllSamplesCheckbox->checkState() == Qt::Unchecked)
     {
-    if (d->GraphDialogWidget)
+    if (d->UltrasoundGraphWidget)
       {
-      d->GraphDialogWidget->setNumberOfDataSamplesToUse(nOfSamples);
+      d->UltrasoundGraphWidget->setNumberOfDataSamplesToUse(nOfSamples);
       }
     }
 }
@@ -149,9 +139,9 @@ void qSlicerUSDataViewerModuleWidget::onSampleOffsetChanged(double sampleOffset)
 
   if (d->AllSamplesCheckbox->checkState() == Qt::Unchecked)
     {
-    if (d->GraphDialogWidget)
+    if (d->UltrasoundGraphWidget)
       {
-      d->GraphDialogWidget->setOffsetOfDataSamples(sampleOffset);
+      d->UltrasoundGraphWidget->setOffsetOfDataSamples(sampleOffset);
       }
     }
 }
